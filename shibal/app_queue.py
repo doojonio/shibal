@@ -10,9 +10,9 @@ app = Celery(
 
 
 @app.task
-def trim_start(drive_url: str, trim_millisec: int) -> str:
+def trim_start(id_in_drive: str, trim_millisec: int) -> str:
     drive = DriveService()
-    drive.get_to(drive_url, "./tmp/to_process.wav")
+    drive.get_to_file_sync(id_in_drive, "./tmp/to_process.wav")
 
     audio: AudioSegment = AudioSegment.from_file("./tmp/to_process.wav", "wav")
 
@@ -22,6 +22,6 @@ def trim_start(drive_url: str, trim_millisec: int) -> str:
     trimmed = audio[trim_millisec:]
 
     trimmed.export("./tmp/trimmed.wav", "wav")
-    drive.put_from("trimmed_in_drive.wav", "./tmp/trimmed.wav")
+    trimmed_id_in_drive = drive.put_from_file_sync("./tmp/trimmed.wav")
 
-    return "trimmed_in_drive.wav"
+    return trimmed_id_in_drive

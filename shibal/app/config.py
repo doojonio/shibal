@@ -1,4 +1,4 @@
-from pydantic import PostgresDsn, RedisDsn
+from pydantic import HttpUrl, PostgresDsn, RedisDsn
 from pydantic_settings import BaseSettings
 
 
@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     REDIS_DSN: RedisDsn
     CELERY_DSN: RedisDsn
     TG_BOT_TOKEN: str
+    DRIVE_URL: HttpUrl
 
 
 settings = Settings()

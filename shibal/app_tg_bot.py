@@ -161,20 +161,19 @@ async def process_audio(update: Update, context: ContextTypes.DEFAULT_TYPE) -> S
         file = await document.get_file()
         await file.download_to_drive("./tmp/downloaded.wav")
         drive = DriveService()
-        drive.put_from("source_in_drive.wav", "./tmp/downloaded.wav")
+        id_in_drive = await drive.put_from_file("./tmp/downloaded.wav")
 
         if context.user_data and (sec := context.user_data.get("typed")):
-            async_result = queue_trim_start.delay(
-                "source_in_drive.wav", float(sec) * 1000
-            )
+            async_result = queue_trim_start.delay(id_in_drive, float(sec) * 1000)
 
             while not async_result.ready():
                 await asyncio.sleep(1)
 
             if async_result.failed():
-                raise ValueError("Fuck UP!")
+                raise ValueError("Worker did not succeed")
 
-            result = drive.get(async_result.get())
+            result = await drive.get(async_result.get())
+
             await update.message.reply_document(result)
 
     return await start(update, context)
