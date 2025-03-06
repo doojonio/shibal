@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+.ruff_cache/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+
+.env
+
+# IDE
+.vscode/
+*.swp
+*.swo
+
+
+/test*.py
+/app_test*.py
+/.devcontainer/data
+/tmp/
