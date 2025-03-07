@@ -12,6 +12,7 @@ from telegram.ext import (
 from app.config import settings
 from app.tg.common import start
 from app.tg.convo_cut import get_cut_conv_handler
+from app.tg.convo_fades import get_fades_conv_handler
 from app.tg.convo_trim import get_trim_conv_handler
 from app.tg.convo_volume import get_add_volume_handler, get_reduce_volume_handler
 from app.tg.values import States
@@ -35,6 +36,7 @@ def main() -> None:
                 get_trim_conv_handler(),
                 get_add_volume_handler(),
                 get_reduce_volume_handler(),
+                get_fades_conv_handler(),
             ],
         },
         fallbacks=[CommandHandler("start", start)],

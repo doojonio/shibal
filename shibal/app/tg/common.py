@@ -7,10 +7,7 @@ from .values import Commands, Fields, States
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> States:
-    msg = (
-        "Я могу просто и быстро редактировать аудио-файлы: "
-        "обрезать или изменить громкость. Что вы хотите?"
-    )
+    msg = "Я могу просто и быстро редактировать аудио-файлы. Что вы хотите?"
 
     buttons = [
         [
@@ -26,6 +23,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> States:
                 text="Понизить громкость",
                 callback_data=Commands.VOLUME_DOWN,
             ),
+        ],
+        [
+            InlineKeyboardButton(text="Добавить фейды", callback_data=Commands.FADES),
         ],
     ]
 
@@ -55,7 +55,12 @@ async def back(update: Update, context: ContextTypes.DEFAULT_TYPE) -> States:
 
 
 def save_input_cb(
-    field: Fields, invalid_msg: str, next_msg: str, next_state: States, check_cb=float
+    field: Fields,
+    invalid_msg: str,
+    current_state: States,
+    next_msg: str,
+    next_state: States,
+    check_cb=float,
 ):
     keyboard = InlineKeyboardMarkup(
         [[InlineKeyboardButton(text="Назад", callback_data=Commands.BACK)]]
@@ -63,7 +68,7 @@ def save_input_cb(
 
     async def save_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> States:
         if not update.message:
-            return States.TYPING_TRIM_START
+            return current_state
 
         if context.user_data is None:
             raise ValueError("Missing context.user_data")
@@ -74,7 +79,7 @@ def save_input_cb(
             checked = check_cb(value)
         except ValueError:
             await update.message.reply_text(invalid_msg, reply_markup=keyboard)
-            return States.TYPING_TRIM_START
+            return current_state
 
         context.user_data[field] = checked
 

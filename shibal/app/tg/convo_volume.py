@@ -116,6 +116,7 @@ def get_add_volume_handler() -> ConversationHandler:
                     save_input_cb(
                         field=Fields.VOLUME,
                         invalid_msg="Пожалуйста, введите число",
+                        current_state=States.TYPING_VOLUME,
                         next_msg="Пожалуйста, загрузите аудио-файл",
                         next_state=States.UPLOAD,
                     ),
@@ -148,6 +149,7 @@ def get_reduce_volume_handler() -> ConversationHandler:
                     save_input_cb(
                         field=Fields.VOLUME,
                         invalid_msg="Пожалуйста, введите число",
+                        current_state=States.TYPING_VOLUME,
                         next_msg="Пожалуйста, загрузите аудио-файл",
                         next_state=States.UPLOAD,
                     ),

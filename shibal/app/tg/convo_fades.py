@@ -12,14 +12,14 @@ from telegram.ext import (
 )
 
 from app.services.drive import DriveService
-from app.tasks import trim as queue_trim
+from app.tasks.fades import add_fades as queue_add_fades
 
 from .common import back, p, save_input_cb, start
 from .values import Commands, Fields, States
 
 
-async def trim_init(update: Update, context: ContextTypes.DEFAULT_TYPE) -> States:
-    msg = "Введите количество секунд, которые нужно отрезать от начала"
+async def fades_init(update: Update, context: ContextTypes.DEFAULT_TYPE) -> States:
+    msg = "Пожалуйста, введите секунду до которой будет продолжаться фейд-ин"
     buttons = [[InlineKeyboardButton(text="Назад", callback_data=Commands.BACK)]]
 
     if not update.callback_query:
@@ -32,10 +32,10 @@ async def trim_init(update: Update, context: ContextTypes.DEFAULT_TYPE) -> State
     await update.callback_query.edit_message_text(text=msg)
     await update.callback_query.edit_message_reply_markup(InlineKeyboardMarkup(buttons))
 
-    return States.TYPING_TRIM_START
+    return States.TYPING_FADE_IN
 
 
-async def process_trim(update: Update, context: ContextTypes.DEFAULT_TYPE) -> States:
+async def process_fades(update: Update, context: ContextTypes.DEFAULT_TYPE) -> States:
     if not update.message:
         raise ValueError("Missing update.message")
     if not context.user_data:
@@ -56,11 +56,11 @@ async def process_trim(update: Update, context: ContextTypes.DEFAULT_TYPE) -> St
     drive = DriveService()
     id_in_drive = await drive.put(file_name or "unnamed", buf.read())
 
-    trim_start_sec = context.user_data[Fields.TRIM_START]
-    trim_end_sec = context.user_data[Fields.TRIM_END]
+    fade_in_sec = context.user_data[Fields.FADE_IN]
+    fade_out_sec = context.user_data[Fields.FADE_OUT]
 
-    async_result = queue_trim.delay(
-        id_in_drive, trim_start_sec * 1000, trim_end_sec * 1000
+    async_result = queue_add_fades.delay(
+        id_in_drive, int(fade_in_sec * 1000), int(fade_out_sec * 1000)
     )
 
     while not async_result.ready():
@@ -69,7 +69,7 @@ async def process_trim(update: Update, context: ContextTypes.DEFAULT_TYPE) -> St
     if async_result.failed():
         if "Invalid length" in async_result.traceback:
             await update.message.reply_text(
-                "Введенные значения не соответствуют длине файла"
+                "Извините, но введенные значения не соответствуют длине файла"
             )
         else:
             await update.message.reply_text(
@@ -85,32 +85,32 @@ async def process_trim(update: Update, context: ContextTypes.DEFAULT_TYPE) -> St
     return await start(update, context)
 
 
-def get_trim_conv_handler() -> ConversationHandler:
+def get_fades_conv_handler() -> ConversationHandler:
     return ConversationHandler(
         entry_points=[
-            CallbackQueryHandler(trim_init, pattern=p(Commands.TRIM)),
+            CallbackQueryHandler(fades_init, pattern=p(Commands.FADES)),
         ],
         states={
-            States.TYPING_TRIM_START: [
+            States.TYPING_FADE_IN: [
                 MessageHandler(
                     filters.TEXT & ~filters.COMMAND,
                     save_input_cb(
-                        field=Fields.TRIM_START,
+                        field=Fields.FADE_IN,
+                        current_state=States.TYPING_FADE_IN,
                         invalid_msg="Пожалуйста, введите число",
-                        current_state=States.TYPING_TRIM_START,
-                        next_msg="Пожалуйста, введите число секунд, которое нужно обрезать с конца",
-                        next_state=States.TYPING_TRIM_END,
+                        next_msg="Пожалуйста, введите секунду, с который начнется фейд-аут",
+                        next_state=States.TYPING_FADE_OUT,
                     ),
                 ),
                 CallbackQueryHandler(back, pattern=p(Commands.BACK)),
             ],
-            States.TYPING_TRIM_END: [
+            States.TYPING_FADE_OUT: [
                 MessageHandler(
                     filters.TEXT & ~filters.COMMAND,
                     save_input_cb(
-                        field=Fields.TRIM_END,
+                        field=Fields.FADE_OUT,
                         invalid_msg="Пожалуйста, введите число",
-                        current_state=States.TYPING_TRIM_END,
+                        current_state=States.TYPING_FADE_OUT,
                         next_msg="Пожалуйста, загрузите аудио-файл",
                         next_state=States.UPLOAD,
                     ),
@@ -118,7 +118,7 @@ def get_trim_conv_handler() -> ConversationHandler:
                 CallbackQueryHandler(back, pattern=p(Commands.BACK)),
             ],
             States.UPLOAD: [
-                MessageHandler(filters.ATTACHMENT | filters.AUDIO, process_trim),
+                MessageHandler(filters.ATTACHMENT | filters.AUDIO, process_fades),
                 CallbackQueryHandler(back, pattern=p(Commands.BACK)),
             ],
         },

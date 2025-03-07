@@ -102,6 +102,7 @@ def get_cut_conv_handler() -> ConversationHandler:
                     save_input_cb(
                         field=Fields.CUT_START,
                         invalid_msg="Пожалуйста, введите число",
+                        current_state=States.TYPING_CUT_START,
                         next_msg="Пожалуйста, введите секунду, которой заканчивается отрезок, который надо вырезать",
                         next_state=States.TYPING_CUT_END,
                     ),
@@ -114,6 +115,7 @@ def get_cut_conv_handler() -> ConversationHandler:
                     save_input_cb(
                         field=Fields.CUT_END,
                         invalid_msg="Пожалуйста, введите число",
+                        current_state=States.TYPING_CUT_END,
                         next_msg="Пожалуйста, загрузите аудио-файл",
                         next_state=States.UPLOAD,
                     ),

@@ -6,6 +6,7 @@ class Commands(StrEnum):
     CUT = "CUT"
     VOLUME_UP = "VOLUME_UP"
     VOLUME_DOWN = "VOLUME_DOWN"
+    FADES = "FADES"
     BACK = "BACK"
 
 
@@ -16,6 +17,8 @@ class States(StrEnum):
     TYPING_CUT_START = "TYPING_CUT_START"
     TYPING_CUT_END = "TYPING_CUT_END"
     TYPING_VOLUME = "TYPING_VOLUME"
+    TYPING_FADE_IN = "TYPING_FADE_IN"
+    TYPING_FADE_OUT = "TYPING_FADE_OUT"
     UPLOAD = "UPLOAD"
     STOP = "STOP"
 
@@ -28,3 +31,5 @@ class Fields(IntEnum):
     CUT_START = 13
     CUT_END = 14
     VOLUME = 15
+    FADE_IN = 16
+    FADE_OUT = 17
