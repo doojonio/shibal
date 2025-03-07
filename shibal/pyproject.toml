@@ -20,6 +20,7 @@ pydub = "^0.25.1"
 python-telegram-bot = "^21.11.1"
 moviepy = "^2.1.2"
 httpx = "^0.28.1"
+uuid = "^1.30"
 
 
 [tool.poetry.group.dev.dependencies]

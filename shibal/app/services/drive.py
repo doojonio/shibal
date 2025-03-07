@@ -1,3 +1,5 @@
+import os.path
+
 import httpx
 
 from app.config import settings
@@ -28,9 +30,13 @@ class DriveService:
     async def put_from_file(self, from_path: str) -> str:
         """Returns an id of newly uploaded file"""
 
+        _, ext = os.path.splitext(from_path)
+
         with open(from_path, "rb") as rh:
             async with httpx.AsyncClient() as client:
-                resp = await client.post(self.base_url + "put", files={"file": rh})
+                resp = await client.post(
+                    self.base_url + "put", files={"file": ("file" + ext, rh)}
+                )
 
                 if resp.status_code != 200:
                     raise ServiceError(resp.status_code)
@@ -70,10 +76,12 @@ class DriveService:
     def put_from_file_sync(self, from_path: str) -> str:
         """Returns an id of newly uploaded file"""
 
+        _, ext = os.path.splitext(from_path)
+
         with open(from_path, "rb") as rh:
             with httpx.Client() as client:
                 resp = client.post(
-                    self.base_url + "put", files={"file": ("name.wav", rh)}
+                    self.base_url + "put", files={"file": ("file" + ext, rh)}
                 )
 
                 if resp.status_code != 200:
