@@ -3,6 +3,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
+    ASYNC_PG_DSN: PostgresDsn
     PG_DSN: PostgresDsn
     REDIS_DSN: RedisDsn
     CELERY_DSN: RedisDsn

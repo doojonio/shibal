@@ -31,12 +31,12 @@ class Operation(Base):
     op_type: Mapped[OperationTypes] = mapped_column(
         pg.ENUM(OperationTypes, name="operation_type")
     )
-    details: Mapped[dict] = mapped_column(pg.JSON, nullable=False)
+    details: Mapped[dict] = mapped_column(pg.JSON, nullable=False, default=dict)
     started: Mapped[datetime.datetime] = mapped_column(server_default=text("now()"))
     took: Mapped[float | None] = mapped_column(nullable=True)
 
     user: Mapped["User"] = relationship(back_populates="operations")
 
     def set_details(self, key: str, value: str | int | bool):
-        self.details[str] = value
+        self.details[key] = value
         flag_modified(self, "details")

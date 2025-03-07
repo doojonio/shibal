@@ -8,7 +8,7 @@ from sqlalchemy.orm.session import Session, sessionmaker
 from app.config import settings
 
 # Create an async engine
-async_engine = create_async_engine(str(settings.PG_DSN))
+async_engine = create_async_engine(str(settings.ASYNC_PG_DSN))
 async_session = async_sessionmaker(async_engine)
 
 

@@ -12,10 +12,9 @@ from telegram.ext import (
 )
 
 from app.db import async_session
-from app.models.operations import OperationTypes
+
 from app.services import users
 from app.services.drive import DriveService
-from app.services.operations import new_operation
 from app.tasks import cut as queue_cut
 
 from .common import back, p, save_input_cb, start
@@ -58,7 +57,7 @@ async def process_cut(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Sta
     buf.seek(0)
 
     drive = DriveService()
-    id_in_drive = await drive.put(file_name or "unnamed", buf.read())
+    file_id = await drive.put(file_name or "unnamed", buf.read())
 
     start_sec = context.user_data[Fields.CUT_START]
     end_sec = context.user_data[Fields.CUT_END]
@@ -71,34 +70,32 @@ async def process_cut(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Sta
 
     async with async_session() as db:
         user = await users.get_or_create_user_by_chat(
-            db, update.message.chat_id, with_for_update=True
+            db,
+            update.message.chat_id,
         )
-
-        async with new_operation(db, user, OperationTypes.CUT) as op:
-            async_result = queue_cut.delay(
-                id_in_drive, start_sec * 1000, end_sec * 1000
-            )
-
-            while not async_result.ready():
-                await asyncio.sleep(1)
-
-            if async_result.failed():
-                if "Invalid length" in async_result.traceback:
-                    await update.message.reply_text(
-                        "Введенные значения не соответствуют длине файла"
-                    )
-                else:
-                    await update.message.reply_text(
-                        "Извините, произошла ошибка, попробуйте снова"
-                    )
-                op.set_details("failed", True)
-            else:
-                name_id = async_result.get()
-                input_file = InputFile(await drive.get(name_id), name_id)
-
-                await update.message.reply_document(input_file)
-
+        user_id = user.id
+        del user
         await db.commit()
+
+    async_result = queue_cut.delay(user_id, file_id, start_sec * 1000, end_sec * 1000)
+
+    while not async_result.ready():
+        await asyncio.sleep(1)
+
+    if async_result.failed():
+        if "Invalid length" in async_result.traceback:
+            await update.message.reply_text(
+                "Введенные значения не соответствуют длине файла"
+            )
+        else:
+            await update.message.reply_text(
+                "Извините, произошла ошибка, попробуйте снова"
+            )
+    else:
+        name_id = async_result.get()
+        input_file = InputFile(await drive.get(name_id), name_id)
+
+        await update.message.reply_document(input_file)
 
     return await start(update, context)
 

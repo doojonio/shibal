@@ -1,12 +1,21 @@
 import datetime
+from uuid import UUID
 
 from sqlalchemy import select
 
-from app.db import AsyncSession
+from app.db import AsyncSession, Session
 from app.models.orders import Order, OrderTypes
 from app.models.users import User
 
 OPS_FOR_NEW_USER = 324
+
+
+def get_user_by_id(db: Session, id: UUID, with_for_update=False) -> User:
+    query = db.query(User).filter_by(id=id)
+    if with_for_update:
+        query = query.with_for_update()
+
+    return query.one()
 
 
 async def get_or_create_user_by_chat(

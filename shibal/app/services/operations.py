@@ -1,16 +1,15 @@
-from contextlib import asynccontextmanager
+from contextlib import contextmanager
 from datetime import datetime
+from time import time
 
-from app.db import AsyncSession
+from app.db import Session
 from app.models.operations import Operation, OperationTypes
 from app.models.users import User
 
-from time import time
 
-
-@asynccontextmanager
-async def new_operation(db: AsyncSession, user: User, op_type: OperationTypes):
-    new_op = Operation(user=user, op_type=op_type, started=datetime.now())
+@contextmanager
+def new_operation(db: Session, user: User, op_type: OperationTypes):
+    new_op = Operation(user=user, op_type=op_type, details={}, started=datetime.now())
     db.add(new_op)
 
     started_at = time()
@@ -21,4 +20,4 @@ async def new_operation(db: AsyncSession, user: User, op_type: OperationTypes):
         new_op.took = elapsed
         user.op_balance -= 1
 
-        await db.flush()
+        db.flush()
