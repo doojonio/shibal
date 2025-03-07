@@ -11,8 +11,11 @@ from telegram.ext import (
     filters,
 )
 
+from app.services import users
 from app.services.drive import DriveService
 from app.tasks import cut as queue_cut
+
+from app.db import async_session
 
 from .common import back, p, save_input_cb, start
 from .values import Commands, Fields, States
@@ -64,6 +67,10 @@ async def process_cut(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Sta
             "Секунда начала отрезка не может быть больше секунды его конца!"
         )
         return await start(update, context)
+
+    async with async_session() as db:
+        _u = await users.get_or_create_user_by_chat(db, update.message.chat_id)
+        print(_u)
 
     async_result = queue_cut.delay(id_in_drive, start_sec * 1000, end_sec * 1000)
 
