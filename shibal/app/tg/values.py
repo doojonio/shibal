@@ -15,6 +15,7 @@ class States(StrEnum):
     TYPING_TRIM_END = "TYPING_TRIM_END"
     TYPING_CUT_START = "TYPING_CUT_START"
     TYPING_CUT_END = "TYPING_CUT_END"
+    TYPING_VOLUME = "TYPING_VOLUME"
     UPLOAD = "UPLOAD"
     STOP = "STOP"
 
@@ -26,5 +27,4 @@ class Fields(IntEnum):
     TRIM_END = 12
     CUT_START = 13
     CUT_END = 14
-    VOLUME_UP = 15
-    VOLUME_DOWN = 16
+    VOLUME = 15

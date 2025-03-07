@@ -71,6 +71,10 @@ async def process_trim(update: Update, context: ContextTypes.DEFAULT_TYPE) -> St
             await update.message.reply_text(
                 "Введенные значения не соответствуют длине файла"
             )
+        else:
+            await update.message.reply_text(
+                "Извините, произошла ошибка, попробуйте снова"
+            )
         return await start(update, context)
 
     name_id = async_result.get()

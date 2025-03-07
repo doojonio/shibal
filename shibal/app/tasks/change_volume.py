@@ -8,7 +8,7 @@ from app.utils.files import get_path_for_tempfile
 
 
 @app.task
-def change_volume(id_in_drive: str, change_in_dB: int) -> str:
+def change_volume(id_in_drive: str, dB: int) -> str:
     _, ext = os.path.splitext(id_in_drive)
 
     if not ext or not ext.startswith("."):
@@ -22,7 +22,7 @@ def change_volume(id_in_drive: str, change_in_dB: int) -> str:
     audio_format = ext[1:]
     audio: AudioSegment = AudioSegment.from_file(file_temp, audio_format)
 
-    audio += change_in_dB
+    audio += dB
 
     audio.export(file_temp, "wav")
     in_drive_id = drive.put_from_file_sync(file_temp)

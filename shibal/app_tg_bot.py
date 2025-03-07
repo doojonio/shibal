@@ -13,6 +13,7 @@ from app.config import settings
 from app.tg.common import start
 from app.tg.convo_cut import get_cut_conv_handler
 from app.tg.convo_trim import get_trim_conv_handler
+from app.tg.convo_volume import get_add_volume_handler, get_reduce_volume_handler
 from app.tg.values import States
 
 logging.basicConfig(
@@ -32,6 +33,8 @@ def main() -> None:
             States.CMD_CHOOSE: [
                 get_cut_conv_handler(),
                 get_trim_conv_handler(),
+                get_add_volume_handler(),
+                get_reduce_volume_handler(),
             ],
         },
         fallbacks=[CommandHandler("start", start)],

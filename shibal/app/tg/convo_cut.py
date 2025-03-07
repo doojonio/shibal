@@ -60,7 +60,10 @@ async def process_cut(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Sta
     end_sec = context.user_data[Fields.CUT_END]
 
     if start_sec >= end_sec:
-        raise ValueError("TODO")
+        await update.message.reply_text(
+            "Секунда начала отрезка не может быть больше секунды его конца!"
+        )
+        return await start(update, context)
 
     async_result = queue_cut.delay(id_in_drive, start_sec * 1000, end_sec * 1000)
 
@@ -68,7 +71,16 @@ async def process_cut(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Sta
         await asyncio.sleep(1)
 
     if async_result.failed():
-        raise ValueError("Worker did not succeed")
+        if "Invalid length" in async_result.traceback:
+            await update.message.reply_text(
+                "Введенные значения не соответствуют длине файла"
+            )
+        else:
+            await update.message.reply_text(
+                "Извините, произошла ошибка, попробуйте снова"
+            )
+
+        return await start(update, context)
 
     name_id = async_result.get()
     input_file = InputFile(await drive.get(name_id), name_id)

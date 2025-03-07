@@ -20,7 +20,11 @@ def cut(id_in_drive: str, start_ms: int, end_ms: int) -> str:
     drive.get_to_file_sync(id_in_drive, file_temp)
 
     audio_format = ext[1:]
-    audio: AudioSegment = AudioSegment.from_file("./tmp/to_process.wav", audio_format)
+    audio: AudioSegment = AudioSegment.from_file(file_temp, audio_format)
+
+    audio_length = len(audio)
+    if start_ms < 0 or start_ms > end_ms or end_ms > audio_length:
+        raise ValueError("Invalid length")
 
     new_audio = audio[:start_ms] + audio[end_ms:]
 
