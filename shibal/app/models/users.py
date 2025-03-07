@@ -6,6 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
 from .operations import Operation
+from .orders import Order
 
 
 class User(Base):
@@ -19,3 +20,4 @@ class User(Base):
     created: Mapped[datetime.datetime] = mapped_column(server_default=text("now()"))
 
     operations: Mapped[list["Operation"]] = relationship(back_populates="user")
+    orders: Mapped[list["Order"]] = relationship(back_populates="user")

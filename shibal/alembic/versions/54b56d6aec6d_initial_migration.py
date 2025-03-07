@@ -12,8 +12,8 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql as pg
 
 from alembic import op
-from app.models.operations import OperationType
-from app.models.orders import OrderType
+from app.models.operations import OperationTypes
+from app.models.orders import OrderTypes
 
 # revision identifiers, used by Alembic.
 revision: str = "54b56d6aec6d"
@@ -22,8 +22,8 @@ branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 
-OPERATION_TYPE = pg.ENUM(OperationType, name="operation_type")
-ORDER_TYPE = pg.ENUM(OrderType, name="order_type")
+OPERATION_TYPE = pg.ENUM(OperationTypes, name="operation_type")
+ORDER_TYPE = pg.ENUM(OrderTypes, name="order_type")
 
 
 def upgrade() -> None:
