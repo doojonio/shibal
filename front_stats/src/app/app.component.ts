@@ -1,11 +1,19 @@
 import { Component } from '@angular/core';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterOutlet } from '@angular/router';
 import { ChartConfiguration, ChartOptions } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
+import { IUser, UsersService } from './users.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, BaseChartDirective],
+  imports: [
+    RouterOutlet, BaseChartDirective, MatIconModule,
+    MatButtonModule, MatToolbarModule,
+  ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
@@ -33,14 +41,19 @@ export class AppComponent {
     ]
   }
 
+  public users: Array<IUser> = []
+
+
   public lineChartOptions: ChartOptions<'line'> = {
     responsive: false
   }
   public lineChartLegend = true;
 
-  constructor() {}
+  constructor(private usersService: UsersService) { }
 
   ngOnInit() {
+
+    this.usersService.getUsers().subscribe(users => { this.users = users });
 
   }
 }
