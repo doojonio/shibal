@@ -1,5 +1,6 @@
 from datetime import date, timedelta
 from typing import Iterable
+from uuid import UUID
 
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
@@ -18,6 +19,15 @@ async def list_users(db: AsyncSession = Depends(get_async_db)) -> Iterable[User]
     users = await db.execute(select(User).order_by(User.id.desc()))
 
     return users.scalars()
+
+
+@router.get("/get", response_model=UserScheme)
+async def get_user(
+    user_id: UUID, db: AsyncSession = Depends(get_async_db)
+) -> User | None:
+    user = await db.execute(select(User).filter_by(id=user_id).order_by(User.id.desc()))
+
+    return user.scalar()
 
 
 @router.get("/count_per_day", responses={200: {}, 403: {"model": ErrorScheme}})

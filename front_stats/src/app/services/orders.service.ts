@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import { Dictionary } from '../utils/types';
@@ -28,12 +28,23 @@ export class OrdersService {
   constructor(private http: HttpClient) {
   }
 
-  getOrders() {
-    return this.http.get<Array<Order>>(this.baseUrl + "/list")
+  getOrders(userId: string | undefined = undefined) {
+    let params = new HttpParams()
+
+    if (userId != undefined) {
+      params = params.set("user_id", userId)
+    }
+
+    return this.http.get<Array<Order>>(this.baseUrl + "/list", { params })
   }
 
-  getCountPerDay(maxDays: number) {
-    return this.http.get<any>(this.baseUrl + "/count_per_day", { params: { days: maxDays } }).pipe(
+  getCountPerDay(maxDays: number, userId: string | undefined = undefined) {
+    let params = (new HttpParams()).set("days", maxDays)
+    if (userId != undefined) {
+      params = params.set("user_id", userId)
+    }
+
+    return this.http.get<any>(this.baseUrl + "/count_per_day", { params }).pipe(
       map(dict => {
         const dictDate = new Map<number, number>();
         for (let k in dict) {

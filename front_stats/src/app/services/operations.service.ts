@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs';
 
@@ -29,15 +29,38 @@ export class OperationsService {
   constructor(private http: HttpClient) {
   }
 
-  getCountPerHour() {
+  getCountPerHour(userId: string | undefined = undefined) {
 
-    return this.http.get<[string, number][]>(this.baseUrl + "/count_per_hour").pipe(
+    let params = new HttpParams()
+
+    if (userId != undefined) {
+      params = params.set("user_id", userId)
+    }
+
+    return this.http.get<[string, number][]>(this.baseUrl + "/count_per_hour", { params }).pipe(
       // FIXME: return utc date on backend
-      map(counts => counts.map(c => [new Date(c[0] + "Z"), c[1]] as CountPerHour ))
+      map(counts => counts.map(c => [new Date(c[0] + "Z"), c[1]] as CountPerHour))
     )
   }
 
-  getOperations() {
-    return this.http.get<Array<Operation>>(this.baseUrl + "/list")
+  getCountPerType(userId: string | undefined = undefined) {
+
+    let params = new HttpParams()
+
+    if (userId != undefined) {
+      params = params.set("user_id", userId)
+    }
+
+    return this.http.get<[OperationTypes, number][]>(this.baseUrl + "/count_per_type", { params })
+  }
+
+  getOperations(userId: string | undefined = undefined) {
+    let params = new HttpParams()
+
+    if (userId != undefined) {
+      params = params.set("user_id", userId)
+    }
+
+    return this.http.get<Array<Operation>>(this.baseUrl + "/list", { params })
   }
 }

@@ -1,4 +1,10 @@
 <h2>Operations</h2>
+
+<div class="charts">
+    <app-charts-operations [userId]="userId"></app-charts-operations>
+    <app-charts-operations-types [userId]="userId"></app-charts-operations-types>
+</div>
+
 <table mat-table [dataSource]="operations" class="mat-elevation-z8">
 
     <!--- Note that these columns can be defined in any order.
@@ -35,6 +41,11 @@
 </table>
 
 <h2> Orders</h2>
+
+<div class="charts">
+    <app-charts-orders [userId]="userId"></app-charts-orders>
+</div>
+
 
 <table mat-table [dataSource]="orders" class="mat-elevation-z8">
 

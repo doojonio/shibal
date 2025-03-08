@@ -1,29 +1,28 @@
 import { Component, Input } from '@angular/core';
 import { ChartConfiguration, ChartOptions } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
-import { CountPerHour, OperationsService } from '../../services/operations.service';
-import { getLastHours } from '../../utils/dates';
+import { OrdersService } from '../../services/orders.service';
+import { getLastDays } from '../../utils/dates';
 
 @Component({
-  selector: 'app-charts-operations',
+  selector: 'app-charts-orders',
   imports: [BaseChartDirective],
-  templateUrl: './operations.component.html',
-  styleUrl: './operations.component.scss'
+  templateUrl: './orders.component.html',
+  styleUrl: './orders.component.scss'
 })
-export class ChartOperationsComponent {
+export class ChartOrdersComponent {
   @Input() userId: string | undefined = undefined
 
-
   constructor(
-    private operationsService: OperationsService,
+    private ordersService: OrdersService,
   ) { }
 
   ngOnInit() {
-    this.operationsService.getCountPerHour(this.userId).subscribe(this.processOpCounts.bind(this))
+    this.ordersService.getCountPerDay(5, this.userId).subscribe(this.processOrderCounts.bind(this))
   }
 
+  public lineChartLegend = true;
   public lineChartData: ChartConfiguration<'line'>['data'] | undefined
-
   public lineChartOptions: ChartOptions<'line'> = {
     responsive: false,
     scales: {
@@ -34,18 +33,13 @@ export class ChartOperationsComponent {
       }
     }
   }
-  public lineChartLegend = true;
 
-  processOpCounts(counts: CountPerHour[]) {
-    const last5Hours = getLastHours(5)
-    const hourToCount = new Map()
-    for (let [h, c] of counts) {
-      hourToCount.set(h.getHours(), c)
-    }
+  processOrderCounts(counts: Map<number, number>) {
+    const last5Days = getLastDays(5)
 
     const data = []
-    for (const h of last5Hours) {
-      const count = hourToCount.get(h.getHours())
+    for (const h of last5Days) {
+      const count = counts.get(h.getDate())
 
       if (count === undefined) {
         data.push(0)
@@ -56,11 +50,11 @@ export class ChartOperationsComponent {
     }
 
     this.lineChartData = {
-      labels: last5Hours.map(h => h.getHours()),
+      labels: last5Days.map(h => h.getDate()),
       datasets: [
         {
           data: data,
-          label: 'Operations per hour',
+          label: 'Orders per day',
           fill: true,
           tension: 0.5,
           borderColor: 'black',
@@ -68,4 +62,5 @@ export class ChartOperationsComponent {
       ]
     }
   }
+
 }
