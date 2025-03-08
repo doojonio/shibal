@@ -11,6 +11,8 @@ from telegram.ext import (
     filters,
 )
 
+from app.db import async_session
+from app.services import users
 from app.services.drive import DriveService
 from app.tasks import change_volume as queue_change_volume
 
@@ -83,7 +85,16 @@ def get_process_cb(add: bool):
         if not add:
             volume *= -1
 
-        async_result = queue_change_volume.delay(id_in_drive, volume)
+        async with async_session() as db:
+            user = await users.get_or_create_user_by_chat(
+                db,
+                update.message.chat_id,
+            )
+            user_id = user.id
+            await db.commit()
+            del user
+
+        async_result = queue_change_volume.delay(user_id, id_in_drive, volume)
 
         while not async_result.ready():
             await asyncio.sleep(1)

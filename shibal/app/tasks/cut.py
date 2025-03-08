@@ -36,7 +36,7 @@ def cut(user_id: UUID, file_id: str, start_ms: int, end_ms: int) -> str:
 
             new_audio = audio[:start_ms] + audio[end_ms:]
 
-            op.set_details("old_length", audio_length)
+            op.set_details("length", audio_length)
             op.set_details("new_length", len(new_audio))
             op.set_details("cut", ":".join(map(str, (start_ms, end_ms))))
 

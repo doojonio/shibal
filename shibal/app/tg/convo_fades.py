@@ -17,6 +17,9 @@ from app.tasks.fades import add_fades as queue_add_fades
 from .common import back, p, save_input_cb, start
 from .values import Commands, Fields, States
 
+from app.services import users
+from app.db import async_session
+
 
 async def fades_init(update: Update, context: ContextTypes.DEFAULT_TYPE) -> States:
     msg = "Пожалуйста, введите секунду до которой будет продолжаться фейд-ин"
@@ -59,8 +62,17 @@ async def process_fades(update: Update, context: ContextTypes.DEFAULT_TYPE) -> S
     fade_in_sec = context.user_data[Fields.FADE_IN]
     fade_out_sec = context.user_data[Fields.FADE_OUT]
 
+    async with async_session() as db:
+        user = await users.get_or_create_user_by_chat(
+            db,
+            update.message.chat_id,
+        )
+        user_id = user.id
+        await db.commit()
+        del user
+
     async_result = queue_add_fades.delay(
-        id_in_drive, int(fade_in_sec * 1000), int(fade_out_sec * 1000)
+        user_id, id_in_drive, int(fade_in_sec * 1000), int(fade_out_sec * 1000)
     )
 
     while not async_result.ready():

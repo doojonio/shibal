@@ -74,8 +74,8 @@ async def process_cut(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Sta
             update.message.chat_id,
         )
         user_id = user.id
-        del user
         await db.commit()
+        del user
 
     async_result = queue_cut.delay(user_id, file_id, start_sec * 1000, end_sec * 1000)
 

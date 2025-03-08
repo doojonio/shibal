@@ -11,6 +11,8 @@ from telegram.ext import (
     filters,
 )
 
+from app.db import async_session
+from app.services import users
 from app.services.drive import DriveService
 from app.tasks import trim as queue_trim
 
@@ -59,8 +61,17 @@ async def process_trim(update: Update, context: ContextTypes.DEFAULT_TYPE) -> St
     trim_start_sec = context.user_data[Fields.TRIM_START]
     trim_end_sec = context.user_data[Fields.TRIM_END]
 
+    async with async_session() as db:
+        user = await users.get_or_create_user_by_chat(
+            db,
+            update.message.chat_id,
+        )
+        user_id = user.id
+        await db.commit()
+        del user
+
     async_result = queue_trim.delay(
-        id_in_drive, trim_start_sec * 1000, trim_end_sec * 1000
+        user_id, id_in_drive, trim_start_sec * 1000, trim_end_sec * 1000
     )
 
     while not async_result.ready():
