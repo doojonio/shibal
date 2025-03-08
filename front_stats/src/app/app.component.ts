@@ -14,7 +14,6 @@ import { UsersComponent } from './views/users/users.component';
     MatButtonModule,
     MatToolbarModule,
 
-    UsersComponent,
     RouterLink,
   ],
   templateUrl: './app.component.html',

@@ -1,7 +1,16 @@
-@if (lineChartData) {
-<div>
-    <canvas baseChart width="400" height="400" [type]="'line'" [data]="lineChartData" [options]="lineChartOptions"
+<div class="charts">
+    @if (usersLineChartData) {
+    <canvas baseChart width="400" height="400" [type]="'line'" [data]="usersLineChartData" [options]="lineChartOptions"
         [legend]="lineChartLegend">
     </canvas>
+    }
+
+    @if (ordersLineChartData) {
+    <canvas baseChart width="400" height="400" [type]="'line'" [data]="ordersLineChartData" [options]="lineChartOptions"
+        [legend]="lineChartLegend">
+    </canvas>
+    }
+
+    <app-charts-operations></app-charts-operations>
+
 </div>
-}
