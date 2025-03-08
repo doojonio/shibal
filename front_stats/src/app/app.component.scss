@@ -1,7 +1,12 @@
-.a1 {
-    display: block;
-}
 
 .spacer {
     flex: 1 1 auto;
+}
+
+.content {
+    padding: 20px;
+}
+
+mat-toolbar .nav-btns button  {
+    margin-left: 30px;
 }

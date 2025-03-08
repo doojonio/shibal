@@ -1,23 +1,24 @@
-<mat-toolbar>
-  <button mat-icon-button>
-    <mat-icon>menu</mat-icon>
-  </button>
-  <span>My App</span>
-  <span class="spacer"></span>
-  <button mat-icon-button>
-    <mat-icon>favorite</mat-icon>
-  </button>
-  <button mat-icon-button>
-    <mat-icon>share</mat-icon>
-  </button>
-</mat-toolbar>
-
 <main>
-  <div class="a1">
-    <canvas baseChart width="400" height="400" [type]="'line'" [data]="lineChartData" [options]="lineChartOptions"
-      [legend]="lineChartLegend">
-    </canvas>
+  <mat-toolbar>
+    <button mat-icon-button>
+      <mat-icon>menu</mat-icon>
+    </button>
+    <span><a routerLink="/">Shibal Admin</a></span>
+    <div class="nav-btns">
+      <button mat-icon-button routerLink="/users"><mat-icon>person</mat-icon></button>
+    </div>
+
+    <span class="spacer"></span>
+
+    <button mat-icon-button>
+      <mat-icon>favorite</mat-icon>
+    </button>
+    <button mat-icon-button>
+      <mat-icon>share</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <div class="content">
+    <router-outlet />
   </div>
 </main>
-
-<router-outlet />
