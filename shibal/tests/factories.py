@@ -8,21 +8,13 @@ from app.models.operations import OperationTypes
 from app.models.orders import Order, OrderTypes
 from app.models.users import User
 
-from .conftest import async_session
-
 
 class BaseFactory(SQLAlchemyModelFactory):
     class Meta:
         abstract = True
-        sqlalchemy_session_factory = async_session
-        sqlalchemy_session_persistence = "flush"
-
-    @classmethod
-    async def _create(cls, model_class, *args, **kwargs):
-        instance = super()._create(model_class, *args, **kwargs)
-        async with cls._meta.sqlalchemy_session_factory() as session:
-            await session.commit()
-        return instance
+        # FIXME: fix async factory creation
+        # sqlalchemy_session_factory = async_session
+        # sqlalchemy_session_persistence = "flush"
 
 
 class UserFactory(BaseFactory):
