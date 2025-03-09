@@ -6,10 +6,17 @@ import { ChartOrdersComponent } from '../../charts/orders/orders.component';
 import { UsersService } from '../../services/users.service';
 import { getLastDays } from '../../utils/dates';
 import { ChartOperationsTypesComponent } from '../../charts/operations-types/operations-types.component';
+import { ChartTotalCuttedComponent } from '../../charts/total-cutted/total-cutted.component';
 
 @Component({
   selector: 'app-home',
-  imports: [BaseChartDirective, ChartOperationsComponent, ChartOrdersComponent, ChartOperationsTypesComponent],
+  imports: [
+    BaseChartDirective,
+    ChartOperationsComponent,
+    ChartOrdersComponent,
+    ChartOperationsTypesComponent,
+    ChartTotalCuttedComponent,
+  ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })

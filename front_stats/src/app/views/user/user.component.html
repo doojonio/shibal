@@ -1,8 +1,19 @@
+@if (user) {
+<h2>User</h2>
+<mat-card appearance="outlined">
+  <mat-card-content>User ID: {{ user.id }}</mat-card-content>
+  <mat-card-content>Chat ID: {{ user.chat_id }}</mat-card-content>
+  <mat-card-content>Operation Balance: {{ user.op_balance }}</mat-card-content>
+  <mat-card-content>Created at: {{ user.created | date: 'medium' }}</mat-card-content>
+</mat-card>
+}
+
 <h2>Operations</h2>
 
 <div class="charts">
     <app-charts-operations [userId]="userId"></app-charts-operations>
     <app-charts-operations-types [userId]="userId"></app-charts-operations-types>
+    <app-charts-total-cutted [userId]="userId"></app-charts-total-cutted>
 </div>
 
 <app-tables-operations [userId]="userId"></app-tables-operations>

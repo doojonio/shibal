@@ -2,7 +2,7 @@ import { DatePipe } from '@angular/common';
 import { Component } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { RouterLink } from '@angular/router';
-import { IUser, UsersService } from '../../services/users.service';
+import { User, UsersService } from '../../services/users.service';
 
 @Component({
   selector: 'app-users',
@@ -26,5 +26,5 @@ export class UsersComponent {
   }
 
 
-  public users: Array<IUser> = []
+  public users: Array<User> = []
 }

@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs';
 
-export interface IUser {
+export interface User {
   id: string
   chat_id: number
   op_balance: number
@@ -19,7 +19,11 @@ export class UsersService {
   }
 
   getUsers() {
-    return this.http.get<Array<IUser>>(this.baseUrl + "/list")
+    return this.http.get<User[]>(this.baseUrl + "/list")
+  }
+
+  getUser(userId: string) {
+    return this.http.get<User>(this.baseUrl + "/get", { params: { "user_id": userId } })
   }
 
   getCountPerDay(maxDays: number) {

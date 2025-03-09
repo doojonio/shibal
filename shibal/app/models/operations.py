@@ -31,7 +31,7 @@ class Operation(Base):
     op_type: Mapped[OperationTypes] = mapped_column(
         pg.ENUM(OperationTypes, name="operation_type")
     )
-    details: Mapped[dict] = mapped_column(pg.JSON, nullable=False, default=dict)
+    details: Mapped[dict] = mapped_column(pg.JSONB, nullable=False, default=dict)
     started: Mapped[datetime.datetime] = mapped_column(server_default=text("now()"))
     took: Mapped[float | None] = mapped_column(nullable=True)
 

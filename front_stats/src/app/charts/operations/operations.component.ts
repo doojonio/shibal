@@ -30,7 +30,9 @@ export class ChartOperationsComponent {
       y: {
         ticks: {
           stepSize: 1,
-        }
+        },
+        suggestedMin:0,
+        beginAtZero: true,
       }
     }
   }

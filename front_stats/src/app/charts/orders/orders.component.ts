@@ -29,7 +29,9 @@ export class ChartOrdersComponent {
       y: {
         ticks: {
           stepSize: 1,
-        }
+        },
+        suggestedMin: 0,
+        beginAtZero: true,
       }
     }
   }

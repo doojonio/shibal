@@ -1,5 +1,4 @@
 from datetime import date, timedelta
-from typing import Iterable
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
@@ -14,11 +13,22 @@ from app.schemas.users import UserScheme
 router = APIRouter(prefix="/users", tags=["users"])
 
 
-@router.get("/list", response_model=list[UserScheme])
-async def list_users(db: AsyncSession = Depends(get_async_db)) -> Iterable[User]:
-    users = await db.execute(select(User).order_by(User.id.desc()))
+@router.get(
+    "/list", responses={200: {"model": list[UserScheme]}, 403: {"model": ErrorScheme}}
+)
+async def list_users(
+    db: AsyncSession = Depends(get_async_db), limit: int = 100, page: int = 0
+):
+    if limit >= 500:
+        return JSONResponse(
+            {"error": "Can't load more than 500 records"}, status_code=403
+        )
 
-    return users.scalars()
+    users = await db.execute(
+        select(User).order_by(User.id.desc()).limit(limit).offset(page * limit)
+    )
+
+    return list(users.scalars())
 
 
 @router.get("/get", response_model=UserScheme)

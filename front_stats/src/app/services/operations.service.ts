@@ -63,4 +63,14 @@ export class OperationsService {
 
     return this.http.get<Array<Operation>>(this.baseUrl + "/list", { params })
   }
+
+  getCuttedPerDay(userId: string | undefined = undefined, days: number = 5) {
+    let params = (new HttpParams()).set("days", days)
+
+    if (userId != undefined) {
+      params = params.set("user_id", userId)
+    }
+
+    return this.http.get<[string, number][]>(this.baseUrl + "/total_cutted_per_day", { params })
+  }
 }
