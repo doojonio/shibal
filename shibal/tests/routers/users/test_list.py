@@ -7,6 +7,7 @@ URL = "/api/v1/users/list"
 
 @pytest.mark.asyncio()
 async def test_if_has_users(db, client):
+    # FIXME async factories
     user = f.UserFactory.build()
     db.add(user)
     await db.flush()

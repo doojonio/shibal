@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  shibal_web:
+    image: shibal
+    build:
+      context: "./shibal/"
+    command: uvicorn --workers 16 --host 0.0.0.0 --port 8000 app_web:app
+    environment: &shibal_env
+      ASYNC_PG_DSN: postgresql+asyncpg://postgres:postgres@db/postgres
+      PG_DSN: postgresql://postgres:postgres@db/postgres
+      REDIS_DSN: redis://redis:6379/0
+      CELERY_DSN: redis://redis:6379/1
+      TG_BOT_TOKEN: ${TG_BOT_TOKEN}
+      DRIVE_URL: http://drive:8080
+
+  shibal_tg_bot:
+    image: shibal
+    build:
+      context: "./shibal/"
+    command: python ./app_tg_bot.py
+    environment: *shibal_env
+
+  shibal_celery:
+    image: shibal
+    build:
+      context: "./shibal/"
+    command: celery -A app_queue worker --concurrency=12
+    environment: *shibal_env
+
+  shibal_admin_front:
+    image: shibal_admin_front
+    build:
+      context: "./front_stats"
+    command: nginx -g "daemon off;"
+
+  nginx:
+    build:
+      context: "./nginx"
+    command: nginx -g "daemon off;"
+    ports:
+      - 8080:80
+
+  db:
+    image: postgres:latest
+    restart: unless-stopped
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: postgres
+
+  drive:
+    image: shibal_drive
+    build:
+      context: ./drive/
+
+  redis:
+    image: redis:latest
+    volumes:
+      - ./data/redis:/data
