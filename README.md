@@ -45,7 +45,7 @@ After selecting a command, the bot will request additional information from the 
 Once the user uploads an audio file as a document, the bot will perform the following steps:
 
 1. Register the user in the database (if not already registered).
-2. Upload the document to the Drive service.
+2. Download the file from Telegram and upload it to the Drive service.
 3. Pass the user's ID and the uploaded document's ID to a Celery queue task.
 4. Wait for a response from Celery.
 
@@ -53,3 +53,58 @@ If Celery encounters an exception, the bot will notify the user. If the issue is
 
 ![](docs/images/bot_3_invalid_input.png "Invalid Input")
 
+## Celery Task Processing
+
+Once a task is received, the Celery worker will execute the following steps:
+
+1. Create a new operation record in the database with the specified task type.
+2. Download the audio file from the Drive service using the `file_id` provided by the Telegram bot.
+3. Validate the audio file's format and length. If they do not meet the requirements or the user's input is invalid, the task will raise an exception and notify the bot.
+4. If the file is valid, the worker will perform the requested operation (e.g., trim, cut, adjust volume, etc.).
+5. Upload the processed file back to the Drive service.
+6. Return the `file_id` of the processed file to the Telegram bot.
+
+## Telegram Bot Receives the Result
+
+Once the Celery worker completes the task, the Telegram bot will receive the `file_id` of the processed file. The bot will then download the file from the Drive service and send the processed result back to the user as a reply.
+
+![](docs/images/bot_4_receiving_result.png "Receiving The Result")
+
+# Shibal Admin
+
+The project includes an additional component called **Shibal Admin**. As mentioned earlier, the `shibal` directory contains not only the Telegram bot and Celery queue but also a web server that handles specific requests. This API provides access to various statistics and information, such as:
+
+- User records
+- Operation logs
+- Order history
+- Count of new users over the last N days
+- Number of operations performed per hour
+- Distribution of operations by type
+- Count of new orders over the last N days
+
+To present this data in a visually appealing and user-friendly format, the `front_stats` Angular 19 project is used.
+
+Currently, the system does not support admin authentication or authorization. Therefore, it is recommended to secure the web server by isolating it from external access (e.g., via network restrictions).
+
+## Home Page
+
+When an admin accesses the web interface, they are greeted with the **Home Page**, which displays several charts summarizing the latest data:
+
+1. **New Users Count**: Number of new users over the last 5 days.
+2. **Orders Count**: Number of orders placed over the last 5 days.
+3. **Operations Count**: Number of operations performed over the last 5 hours.
+4. **Operations Distribution**: A pie chart showing the distribution of operation types (e.g., trim, cut, volume adjustments, etc.).
+5. **Cut Milliseconds**: Total milliseconds trimmed or cut over the last 5 days.
+
+![](docs/images/admin_1_home.png "Home Page")
+
+## Users Page
+
+By clicking the **Users** icon in the toolbar, the admin can navigate to the **Users Page**. This page displays a table with the following columns:
+
+1. **Id**: The user's unique ID in the database. Clicking this field redirects the admin to the user's detailed page.
+2. **Chat ID**: The user's Telegram chat ID.
+3. **Operation Balance**: The remaining number of operations the user can perform.
+4. **Created At**: The date the user was registered.
+
+![](docs/images/admin_2_users.png "Users Page")
