@@ -108,3 +108,46 @@ By clicking the **Users** icon in the toolbar, the admin can navigate to the **U
 4. **Created At**: The date the user was registered.
 
 ![](docs/images/admin_2_users.png "Users Page")
+
+
+## Specific User's Page
+
+By clicking on a user's ID in the users table, the admin can navigate to the user's detailed page. This page is divided into three sections:
+
+1. **User**
+2. **Operations**
+3. **Orders**
+
+### 1. User Block
+This block displays a card containing the same fields as shown in the users table:
+- **Id**: The user's unique ID in the database.
+- **Chat ID**: The user's Telegram chat ID.
+- **Operation Balance**: The remaining number of operations the user can perform.
+- **Created At**: The date the user was registered.
+
+### 2. Operations Block
+This block provides insights into the user's recent operations and includes three charts:
+1. **Operations Per Hour**: The number of operations performed by the user per hour.
+2. **Operations Distribution by Type**: A breakdown of the user's operations by type (e.g., trim, cut, fades, etc.).
+3. **Total Trimmed or Cut Milliseconds Per Day**: The total milliseconds trimmed or cut by the user per day.
+
+Additionally, a table displays the user's latest operations with the following columns:
+- **Id**: The operation's unique ID in the database.
+- **Operation Type**: The type of operation performed (e.g., trim, cut, fades, etc.).
+- **Started At**: The date and time the operation started.
+- **Took**: The total time taken by the Celery worker to complete the operation.
+- **Details**: Additional details about the operation in JSON format.
+
+![](docs/images/admin_3_user.png)
+
+### 3. Orders Block
+This block includes a chart and a table:
+- **Chart**: Displays the number of orders placed by the user per day.
+- **Table**: Lists the user's latest orders with the following columns:
+  - **Id**: The order's unique ID in the database.
+  - **Order Type**: The type of order (`START`, `PAY`, or `PROMO`).
+  - **Operations Added**: The number of operations added to the user's balance by this order.
+  - **Created At**: The date the order was created.
+  - **Payed At**: The date the order was paid (if applicable).
+
+![](docs/images/admin_4_user_orders.png)
